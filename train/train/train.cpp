@@ -151,7 +151,7 @@ void sets() {
 			ss[0] = '\0'; gets_s(ss, 999);
 			u = StrToInt(ss);
 		}
-		if ((u < 0) || (u > 3)) goto repeatss;
+		if ((u < 0) || (u > 5)) goto repeatss;
 		long long count = 0;
 			one = new trains;
 			if (u == 0) tr->light = 0;
@@ -185,13 +185,14 @@ void algs() {
 		long long count = 0, l = 0;
 		count = 0;
 		l = tr->light;
-		tr->light = (l + 1) % 2;
+		tr->light = (tr->light + 1) % 2;
 		do {
-			tr->light = (l + 1) % 2;
 			tr = tr->next;
 			count++;
 		} while (tr->light == l);
-		if(tr==end) { 
+		tr->light = l;
+		for (long long ct = 0;ct < count;ct++) tr = tr->previous;
+		if(tr->light==l) { 
 			printf("Count - %d\n", count);
 			long long t = (clock() - time);
 			int ms = t % 1000;
@@ -202,9 +203,7 @@ void algs() {
 			printf("Time - %d m %d s %d ms\n", min, sec, ms);
 			return;
 		}
-		else {
-			while (tr != end) tr = tr->previous;
-		}
+		tr->light = l;
 	}
 }
 
