@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <windows.h>
 #include <locale.h>
+#include <time.h>
 
-int StrToInt(char *ss) {
-	int i = 0, ii = 0;
+long long StrToInt(char *ss) {
+	long long i = 0, ii = 0;
 	char *s = ss;
 	while (*s) {
 		ii = i;
@@ -24,11 +25,11 @@ int StrToInt(char *ss) {
 	return i;
 }
 
-int intLi(char s[1000]) {
-	int w = 0, dot = 0;
+long long intLi(char s[1000]) {
+	long long w = 0, dot = 0;
 	char chisla[11] = "0123456789";
 	while (s[w]) {
-		for (int i = 0;i < 10;i++) {
+		for (long long i = 0;i < 10;i++) {
 			if (s[w] == chisla[i]) goto yes;
 			if (s[w] == '.') {
 				dot++;
@@ -46,7 +47,7 @@ int intLi(char s[1000]) {
 struct trains {
 	trains *previous;
 	trains *next;
-	int light = 0;
+	long long light = 0;
 };
 typedef trains *Ptrain;
 
@@ -106,10 +107,11 @@ void ins() {
 
 void counts() {
 	char ss[1000];
+	clock_t time = clock();
 		printf("Input count (after 9 simbol will cut):\n");
 		ss[0] = '\0'; gets_s(ss, 999);
 		ss[9] = '\0';
-		int u = StrToInt(ss);
+		long long u = StrToInt(ss);
 		while ((intLi(ss) == 0)) {
 			printf("Вы ввели неверное число. Повторите ввод:");
 			ss[0] = '\0'; gets_s(ss, 999);
@@ -117,11 +119,18 @@ void counts() {
 		}
 		train = NULL;
 		Ptrain tr = end, one;
-		int count = 0;
+		long long count = 0;
 		while (count++!=u) {
 			one = new trains;
 			add(train, one);
 		}
+		long long t = (clock() - time);
+		int ms = t % 1000;
+		t /= 1000;
+		int sec = t % 60;
+		t /= 60;
+		int min = t;
+		printf("Time - %d m %d s %d ms\n", min, sec, ms);
 }
 
 void sets() {
@@ -133,9 +142,9 @@ void sets() {
 	Ptrain tr = end, one;
 	do {
 		system("cls");
-		printf("0 - no light\n1 - light\n\n2 - if you want to set other random\n3 - to exit\n");
+		printf("0 - no light\n1 - light\n\n2 - if you want to set all other 0\n3 - if you want to set all other 1\n4 - if you want to set other random\n5 - to exit\n");
 		ss[0] = '\0'; gets_s(ss, 999);
-		int u = StrToInt(ss);
+		long long u = StrToInt(ss);
 		while ((intLi(ss) == 0)) {
 		repeatss:;
 			printf("Вы ввели неверное число. Повторите ввод:");
@@ -143,45 +152,37 @@ void sets() {
 			u = StrToInt(ss);
 		}
 		if ((u < 0) || (u > 3)) goto repeatss;
-		int count = 0;
+		long long count = 0;
 			one = new trains;
 			if (u == 0) tr->light = 0;
 			if (u == 1) tr->light = 1;
 			if (u == 2) {
+				return;
+			}
+			if (u == 3) {
+				do {
+					tr->light = 1;
+					tr = tr->next;
+				} while (tr != end);
+				return;
+			}
+			if (u == 4) {
 				do {
 					tr->light = rand() % 2;
 					tr = tr->next;
 				} while (tr != end);
 				return;
 			} 
-			if (u == 3) return;
+			if (u == 5) return;
 			tr = tr->next;
 	} while (tr!=end);
 }
 
-void starts() {
-	char ss[1000];
-	printf("Input train number (after 8 simbol will cut)\n");
-	ss[0] = '\0'; gets_s(ss, 999);
-	int u = StrToInt(ss);
-	while ((intLi(ss) == 0)) {
-		printf("Вы ввели неверное число. Повторите ввод:");
-		ss[0] = '\0'; gets_s(ss, 999);
-		u = StrToInt(ss);
-	}
-	ss[8] = '\0';
-	u = StrToInt(ss);
-	Ptrain tr = train;
-	for (int cot = 1; cot < u; cot++) {
-		tr = tr->next;
-	}
-	end = tr;
-}
-
 void algs() {
+	clock_t time = clock();
 	Ptrain tr = end;
 	while (1) {
-		int count = 0, l = 0;
+		long long count = 0, l = 0;
 		count = 0;
 		l = tr->light;
 		tr->light = (l + 1) % 2;
@@ -191,22 +192,28 @@ void algs() {
 			count++;
 		} while (tr->light == l);
 		if(tr==end) { 
-			printf("Count - %d\n", count); 
+			printf("Count - %d\n", count);
+			long long t = (clock() - time);
+			int ms = t % 1000;
+			t /= 1000;
+			int sec = t % 60;
+			t /= 60;
+			int min = t;
+			printf("Time - %d m %d s %d ms\n", min, sec, ms);
 			return;
 		}
 		else {
 			while (tr != end) tr = tr->previous;
 		}
 	}
-
 }
 
 int main()
 {
 	setlocale(LC_ALL, "RUS");
-	int com = -1,	 // Command number
+	long long com = -1,	 // Command number
 		u = -20,	 // Just needed
-		kolKom = 6;	 // Count of commands
+		kolKom = 5;	 // Count of commands
 	char s[1000];
 	while (1) {
 		com = -1;
@@ -215,8 +222,7 @@ int main()
 		printf("0 - Read config from file\n");
 		printf("1 - Set count of trains\n");
 		printf("2 - Set config of trains\n");
-		printf("3 - Go to other train\n");
-		printf("4 - Start algorithm\n");
+		printf("3 - Start algorithm\n");
 		s[0] = '\0'; gets_s(s, 999);
 		u = StrToInt(s);
 		while ((intLi(s) == 0) || (u == -1)) {
@@ -230,9 +236,8 @@ int main()
 		if (u == 0) ins();
 		if (u == 1) counts();
 		if (u == 2) sets();
-		if (u == 3) starts();
-		if (u == 4) algs();
-		if (u == 5) pr();
+		if (u == 3) algs();
+		if (u == 4) pr();
 	}
     return 0;
 }
